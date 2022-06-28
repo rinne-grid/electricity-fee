@@ -47,5 +47,6 @@
   },
   "devDependencies": {
     "prettier": "^2.7.1"
-  }
+  },
+  "homepage": "/sites/ef"
 }
