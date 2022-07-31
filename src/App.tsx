@@ -94,10 +94,67 @@ function App() {
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {};
 
+  const setLocalStorage = (key: string, value: string | number | undefined) => {
+    if (value) {
+      localStorage.setItem(key, value.toString());
+    }
+  };
+
+  const getLocalStorage = (key: string, defaultValue: string | null) => {
+    let targetValue = localStorage.getItem(key);
+    if (targetValue === null) {
+      targetValue = defaultValue;
+    }
+    return targetValue;
+  };
+
+  const [firstUnit] = useState(getLocalStorage('firstUnit', '19.52'));
+  const [secondUnit] = useState(getLocalStorage('secondUnit', '26.48'));
+  const [thirdUnit] = useState(getLocalStorage('thirdUnit', '30.57'));
+  const [baseUnit] = useState(getLocalStorage('baseUnit', '858'));
+  const [monthlyMinUnit] = useState(
+    getLocalStorage('monthlyMinUnit', '235.84')
+  );
+  const [saieneHatsuden] = useState(getLocalStorage('saieneHatsuden', '3.5'));
+  const [sumKwh] = useState('0');
+  const [days] = useState(getLocalStorage('days', getDays().toLocaleString()));
+  const [firstBaseKwh] = useState(getLocalStorage('firstBaseKwh', '120'));
+  const [secondBaseKwh] = useState(getLocalStorage('secondBaseKwh', '300'));
+
+  // useEffect(() => {
+  //   const kwh = getLocalStorage('sumKwh', '0');
+  //   if (kwh) {
+  //     setSumKwh(kwh);
+  //   }
+  // }, []);
+
   useEffect(() => {
     const sub = watch((value, { name, type }) => {
       console.log(value, name, type);
       calcFee(value as Inputs);
+      const {
+        firstUnit,
+        secondUnit,
+        thirdUnit,
+        baseUnit,
+        monthlyMinUnit,
+        saieneHatsuden,
+        sumKwh,
+        days,
+        firstBaseKwh,
+        secondBaseKwh,
+      } = value;
+
+      setLocalStorage('firstUnit', firstUnit);
+      setLocalStorage('secondUnit', secondUnit);
+      setLocalStorage('thirdUnit', thirdUnit);
+      setLocalStorage('baseUnit', baseUnit);
+      setLocalStorage('monthlyMinUnit', monthlyMinUnit);
+      setLocalStorage('saieneHatsuden', saieneHatsuden);
+      setLocalStorage('sumKwh', sumKwh);
+      setLocalStorage('days', days);
+      setLocalStorage('firstBaseKwh', firstBaseKwh);
+      setLocalStorage('secondBaseKwh', secondBaseKwh);
     });
     return () => sub.unsubscribe();
   }, [watch]);
@@ -117,7 +174,7 @@ function App() {
             <ElectricityAmountTextField
               type="number"
               label="電気利用量(Kwh)"
-              defaultValue={0}
+              defaultValue={sumKwh}
               {...register('sumKwh')}
             />
           </ElectricityAmountBox>
@@ -153,7 +210,7 @@ function App() {
                 type="number"
                 label="第1段階料金"
                 variant="outlined"
-                defaultValue={19.52}
+                defaultValue={firstUnit}
                 {...register('firstUnit')}
               />
 
@@ -161,40 +218,40 @@ function App() {
                 type="number"
                 label="第2段階料金"
                 variant="outlined"
-                defaultValue={26.48}
+                defaultValue={secondUnit}
                 {...register('secondUnit')}
               />
 
               <ElectricityBaseTextField
                 type="number"
                 label="第3段階料金"
-                defaultValue={30.57}
+                defaultValue={thirdUnit}
                 {...register('thirdUnit')}
               />
               <ElectricityBaseTextField
                 type="number"
                 label="再エネ発電料金"
-                defaultValue={3.5}
+                defaultValue={saieneHatsuden}
                 {...register('saieneHatsuden')}
               />
 
               <ElectricityBaseTextField
                 type="number"
                 label="基本料金"
-                defaultValue={858}
+                defaultValue={baseUnit}
                 {...register('baseUnit')}
               />
 
               <ElectricityBaseTextField
                 type="number"
                 label="最低月額料金"
-                defaultValue={235.84}
+                defaultValue={monthlyMinUnit}
                 {...register('monthlyMinUnit')}
               />
               <ElectricityBaseTextField
                 type="number"
                 label="日数"
-                defaultValue={getDays()}
+                defaultValue={days}
                 {...register('days')}
               />
             </ElectricityBaseBox>
@@ -202,13 +259,13 @@ function App() {
               <ElectricityBaseTextField
                 type="number"
                 label="第1段階計算基準Kwh"
-                defaultValue={120}
+                defaultValue={firstBaseKwh}
                 {...register('firstBaseKwh')}
               />
               <ElectricityBaseTextField
                 type="number"
                 label="第2段階計算基準Kwh"
-                defaultValue={300}
+                defaultValue={secondBaseKwh}
                 {...register('secondBaseKwh')}
               />
             </ElectricityBaseBox>
